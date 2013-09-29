@@ -1,0 +1,7 @@
+.scoreItem{
+	color: red;
+	font-family: monospace;
+	font-weight: bold;
+	padding: 10px;
+	border: 1px solid #ccc;	
+}
