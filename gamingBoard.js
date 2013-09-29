@@ -1,27 +1,34 @@
 if (Meteor.isClient) {
+  Deps.autorun(function (e) {
+    var comput =$.pinesNotifyErrors(Session.get("currentError"+Meteor.userId()));
+    
+  });
+
   Template.scoreCRUD.events({
-    'click #addScoreBtn' : function (){
-      Session.set("errors"+Meteor.userId(),[]);
+    'click #addScoreBtn' : function (){      
       var options={};
-      options.points=parseInt($("#points").val());
+      Meteor.call("resetErrorsForUser");
+
+      options.points=$("#points").val();
       options.game=$("#game").val();
       options.date=$("#date").val();
-      var meteorReturn=Meteor.call("addScore",options, function(e){        
-          Meteor.call("pinesNotifyErrors",Session.get("errors"+Meteor.userId()));
-      });
+      var meteorReturn=Meteor.call("addScore",options);
     }
   });
+
   Template.scoreCRUD.scores =function(){
       return Scores.find({owner:Meteor.userId()}, {sort:{points:1, game:1}});
   };
+
   Template.scoreCRUD.rendered = function(){
     $('#date').datepicker();
-
   };
+
   Template.scoreCRUD.NOW = function(){
       var now=new Date();
       return now.getMonth()+"/"+now.getDay()+"/"+now.getYear();
   };
+
 }
 
 if (Meteor.isServer) {

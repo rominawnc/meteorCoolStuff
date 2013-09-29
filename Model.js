@@ -1,4 +1,3 @@
-
 Scores = new Meteor.Collection("scores");
 
 Scores.allow({
@@ -28,12 +27,13 @@ Scores.allow({
 Meteor.methods({
 	// options should include: title, description, x, y, public
 	addScore: function (options) {
-		var errors=[];
 		_.mysupervalidator('points',options, "PositiveNumber");
+		Deps.flush();
 		_.mysupervalidator('game',options, "NonEmptyString");
+		Deps.flush();
 		_.mysupervalidator('date',options, "IsDateString");
-
-		if(Session.get("errors"+Meteor.userId()).length==0){
+		Deps.flush();
+		if(typeof(Session)!="undefined" && Session.get("currentError"+Meteor.userId())==null){
 			if (!this.userId){
 				throw new Meteor.Error(403, "You must be logged in");
 			}
@@ -45,16 +45,5 @@ Meteor.methods({
 			 
 			});	
 		}
-		
-	},
-	pinesNotifyErrors: function(errors){		
-		for(var i =0;i<errors.length;i++){
-			$.pnotify({
-		      title: "Oops",
-		      text:  errors[i]?errors[i]:"Something went wrong",
-		      type: "error"
-		    });	
-		}
-	    
 	}
 });
