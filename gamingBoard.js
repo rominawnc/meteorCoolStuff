@@ -1,10 +1,14 @@
 if (Meteor.isClient) {
   Template.scoreCRUD.events({
     'click #addScoreBtn' : function (){
+      Session.set("errors"+Meteor.userId(),[]);
       var options={};
       options.points=parseInt($("#points").val());
       options.game=$("#game").val();
-      Meteor.call("addScore",options);
+      options.date=$("#date").val();
+      var meteorReturn=Meteor.call("addScore",options, function(e){        
+          Meteor.call("pinesNotifyErrors",Session.get("errors"+Meteor.userId()));
+      });
     }
   });
   Template.scoreCRUD.scores =function(){
@@ -12,9 +16,11 @@ if (Meteor.isClient) {
   };
   Template.scoreCRUD.rendered = function(){
     $('#date').datepicker();
+
   };
   Template.scoreCRUD.NOW = function(){
-      return new Date();
+      var now=new Date();
+      return now.getMonth()+"/"+now.getDay()+"/"+now.getYear();
   };
 }
 

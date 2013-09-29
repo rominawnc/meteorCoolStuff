@@ -1,12 +1,3 @@
-var NonEmptyString = Match.Where(function (x) {
-  check(x, String);
-  return x.length !== 0;
-});
-
-var PositiveNumber = Match.Where(function (x) {
-  check(x, Number);
-  return x >= 0;
-});
 
 Scores = new Meteor.Collection("scores");
 
@@ -37,21 +28,33 @@ Scores.allow({
 Meteor.methods({
 	// options should include: title, description, x, y, public
 	addScore: function (options) {
-		check(options, {
-		  points: PositiveNumber,
-		  game: NonEmptyString
-		});
+		var errors=[];
+		_.mysupervalidator('points',options, "PositiveNumber");
+		_.mysupervalidator('game',options, "NonEmptyString");
+		_.mysupervalidator('date',options, "IsDateString");
 
-		if (!this.userId)
-		  throw new Meteor.Error(403, "You must be logged in");
-
-		return Scores.insert({
-		  owner: this.userId,
-		  points: options.points,
-		  game: options.game,
-		  public: !! options.public	  
-		});
+		if(Session.get("errors"+Meteor.userId()).length==0){
+			if (!this.userId){
+				throw new Meteor.Error(403, "You must be logged in");
+			}
+			return Scores.insert({
+			  owner: this.userId,
+			  points: options.points,
+			  date: options.date,
+			  game: options.game,
+			 
+			});	
+		}
+		
+	},
+	pinesNotifyErrors: function(errors){		
+		for(var i =0;i<errors.length;i++){
+			$.pnotify({
+		      title: "Oops",
+		      text:  errors[i]?errors[i]:"Something went wrong",
+		      type: "error"
+		    });	
+		}
+	    
 	}
-	
-
 });
