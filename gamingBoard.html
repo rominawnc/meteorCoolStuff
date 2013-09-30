@@ -17,9 +17,9 @@
 </template>
 <template name="scoreCRUD">	
 	<div id="scoreList" class="span3">
-		{{#each scores}}
-			{{> score}}
-		{{/each}}
+		{{#each games}}
+			{{> game}}			
+		{{/each}}	
 	</div>
 	<div id="scoreEditor" class="span12">
 		<div class="span3">
@@ -45,16 +45,28 @@
 		</div>	
 	</div>	
 </template>
-<template name="score">
-	<div class="scoreItem">
+<template name="game">
+	<div class="gameItem">
 		<div>
-			{{game}}		
-		</div>
+			{{game}}
+				 <ul>
+					{{#each scores game}}
+						{{> gameScore}}
+					{{/each}}
+				</ul>
+		</div>	
+	</div>
+</template>
+<template name="gameScore">
+	<div class="scoreItem">		
 		<div>
 			{{points}}
 		</div>
 		<div>
 			{{date}}
+		</div>
+		<div class="score toolbar">
+			<a id="removeBtn" class="btn" href="#">X</a>
 		</div>
 	</div>
 </template>

@@ -7,8 +7,7 @@ if (Meteor.isClient) {
   Template.scoreCRUD.events({
     'click #addScoreBtn' : function (){      
       var options={};
-      Meteor.call("resetErrorsForUser");
-
+      $.resetErrorsForUser();
       options.points=$("#points").val();
       options.game=$("#game").val();
       options.date=$("#date").val();
@@ -16,9 +15,19 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.scoreCRUD.scores =function(){
-      return Scores.find({owner:Meteor.userId()}, {sort:{points:1, game:1}});
+  Template.gameScore.events({
+    'click #removeBtn'  : function(){
+      var meteorReturn= Meteor.call("removeScore", this._id);
+    }
+  });
+
+  Template.game.scores =function(gameName){
+      return Scores.find({owner:Meteor.userId(),game:gameName}, {sort:{points:1, game:1}});
   };
+
+  Template.scoreCRUD.games = function(){
+    return _.uniq(Scores.find({owner:Meteor.userId()}, {sort:{points:1, game:1}}).fetch(),false,function(s){return s.game;});
+  }
 
   Template.scoreCRUD.rendered = function(){
     $('#date').datepicker();

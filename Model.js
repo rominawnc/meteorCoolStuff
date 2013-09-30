@@ -27,7 +27,6 @@ Scores.allow({
 Meteor.methods({
 	// options should include: title, description, x, y, public
 	addScore: function (options) {
-
 		_.mysupervalidator('points',options, "PositiveNumber");
 		Deps.flush();
 		_.mysupervalidator('game',options, "NonEmptyString");
@@ -52,5 +51,12 @@ Meteor.methods({
 		  date: options.date,
 		  game: options.game,		 
 		});	
-	}		
+	},
+	removeScore: function (id){
+		try{
+			Scores.remove(id);
+		}catch(e){
+			$.pinesNotifyErrors(Session.set("currentError"+Meteor.userId(),"Could not delete the selected item;"));
+		}
+	}
 });
