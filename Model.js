@@ -27,23 +27,30 @@ Scores.allow({
 Meteor.methods({
 	// options should include: title, description, x, y, public
 	addScore: function (options) {
+
 		_.mysupervalidator('points',options, "PositiveNumber");
 		Deps.flush();
 		_.mysupervalidator('game',options, "NonEmptyString");
 		Deps.flush();
 		_.mysupervalidator('date',options, "IsDateString");
 		Deps.flush();
-		if(typeof(Session)!="undefined" && Session.get("currentError"+Meteor.userId())==null){
-			if (!this.userId){
-				throw new Meteor.Error(403, "You must be logged in");
+		/**
+		Important:
+		** Only check for errors in the client, since the server cannot get the session var and will throw undefined. If checking against undefined, the server wont save the data, even when the client accepts it as valid
+		*/
+		if(Meteor.isClient){
+			if(typeof(Session)!="undefined" && Session.get("currentError"+Meteor.userId())!=null){
+				return false;
 			}
-			return Scores.insert({
-			  owner: this.userId,
-			  points: options.points,
-			  date: options.date,
-			  game: options.game,
-			 
-			});	
 		}
-	}
+		if (!this.userId){
+			throw new Meteor.Error(403, "You must be logged in");
+		}
+		return Scores.insert({
+		  owner: this.userId,
+		  points: options.points,
+		  date: options.date,
+		  game: options.game,		 
+		});	
+	}		
 });

@@ -1,12 +1,9 @@
 /**
 Notification helper 
 */
-
 (function($) {
   $.extend({
-
-      pinesNotifyErrors: function(errors){    
-        
+      pinesNotifyErrors: function(errors){            
         if(typeof($)!="undefined" && errors!=null){
           $.pnotify({
               title: "Oops",
