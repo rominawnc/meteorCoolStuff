@@ -48,9 +48,9 @@
 <template name="game">
 	<div class="gameItem">
 		<div>
-			{{game}}
+			{{name}}
 				 <ul>
-					{{#each scores game}}
+					{{#each scores _id}}
 						{{> gameScore}}
 					{{/each}}
 				</ul>

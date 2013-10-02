@@ -8,12 +8,20 @@ if (Meteor.isClient) {
     'click #addScoreBtn' : function (){      
       var options={};
       $.resetErrorsForUser();
+      var gameObj=Games.findOne({name:$("#game").val()});
+      console.log(gameObj);
+      if (gameObj){
+        options.idGame= gameObj._id;
+      }else{
+          gameObj=Meteor.call("addGame", {name:$("#game").val()});
+          options.idGame=gameObj;
+      }      
       options.points=$("#points").val();
-      options.game=$("#game").val();
       options.date=$("#date").val();
       var meteorReturn=Meteor.call("addScore",options);
-    }
+    }    
   });
+
 
   Template.gameScore.events({
     'click #removeBtn'  : function(){
@@ -21,12 +29,13 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.game.scores =function(gameName){
-      return Scores.find({owner:Meteor.userId(),game:gameName}, {sort:{points:1, game:1}});
+  Template.game.scores =function(gameId){
+      return Scores.find({owner:Meteor.userId(),idGame:gameId}, {sort:{points:1, idGame:1}});
   };
 
   Template.scoreCRUD.games = function(){
-    return _.uniq(Scores.find({owner:Meteor.userId()}, {sort:{points:1, game:1}}).fetch(),false,function(s){return s.game;});
+    var gameIds= _.map(_.uniq(Scores.find({owner:Meteor.userId()}, {sort:{idGame:1}}).fetch(),false,function(s){return s.idGame;}), function(a){return a.idGame;});
+    return Games.find( { _id: { $in: gameIds } }).fetch();
   }
 
   Template.scoreCRUD.rendered = function(){
